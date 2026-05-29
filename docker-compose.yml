@@ -1,0 +1,7 @@
+services:
+  oikura:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./config.ini:/config/config.ini
+      - ./sessions:/app/sessions

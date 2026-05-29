@@ -7,9 +7,8 @@ import os
 
 from pyrogram import idle
 
-from oikura.client import OikuraBot
+from oikura.client import init_bot
 from oikura.config import load_config
-from oikura.handlers import register_media_handlers
 
 
 def parse_args() -> argparse.Namespace:
@@ -18,7 +17,7 @@ def parse_args() -> argparse.Namespace:
         "-c",
         "--config",
         default=os.environ.get("OIKURA_CONFIG"),
-        help="Path to the INI config file. Defaults to config/config.ini, then config.ini.",
+        help="Path to the INI config file. Defaults to config.ini.",
     )
     return parser.parse_args()
 
@@ -31,8 +30,10 @@ async def amain() -> None:
 
     args = parse_args()
     config = load_config(args.config)
-    bot = OikuraBot(config=config)
-    register_media_handlers(bot)
+    bot = init_bot(config=config)
+
+    import oikura.handlers.commands  # noqa: F401
+    import oikura.handlers.media  # noqa: F401
 
     await bot.start()
     logging.info("oikura bot started with config %s", config.path)

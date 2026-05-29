@@ -14,13 +14,15 @@ class OikuraBot(Client):
         self.config = config
         self.http: aiohttp.ClientSession | None = None
         self.pixiv_api = AppPixivAPI()
+        workdir = Path("sessions")
+        workdir.mkdir(parents=True, exist_ok=True)
 
         super().__init__(
             name="oikura_bot",
             api_id=config.pyrogram.api_id,
             api_hash=config.pyrogram.api_hash,
             bot_token=config.pyrogram.bot_token,
-            workdir=Path("."),
+            workdir=workdir,
             workers=16,
             no_updates=False,
         )

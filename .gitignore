@@ -209,6 +209,13 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+# Local config
+*.ini
+!config.sample.ini
+sessions/
+*.session
+*.session-journal
+
 # Marimo
 marimo/_static/
 marimo/_lsp/

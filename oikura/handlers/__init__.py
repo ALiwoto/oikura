@@ -1,3 +1,1 @@
-from .media import register_media_handlers
-
-__all__ = ("register_media_handlers",)
+"""Handler modules are imported by oikura.__main__ for decorator registration."""
