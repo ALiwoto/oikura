@@ -1,4 +1,5 @@
 import datetime
+import logging
 import math
 import os
 import unicodedata
@@ -14,6 +15,8 @@ from PIL import Image, ImageDraw, ImageFont
 from .twitter_caption import get_twitter_author_identity, parse_twitter_post_date
 from .twitter_media import build_twitter_temp_path, get_twitter_media_kind
 
+
+logger = logging.getLogger(__name__)
 
 TWITTER_SCREENSHOT_WIDTH = 820
 TWITTER_SCREENSHOT_BORDER = "#2F3336"
@@ -882,7 +885,7 @@ def upscale_twitter_screenshot(image: Image.Image) -> Image.Image:
     )
 
 
-def render_twitter_text_screenshot(
+def render_twitter_text_screenshot_python(
     tweet_text: str,
     temp_dir: str,
     tweet_identifier: str,
@@ -958,3 +961,46 @@ def render_twitter_text_screenshot(
     image = upscale_twitter_screenshot(image)
     image.convert("RGB").save(output_path, format="PNG", optimize=True)
     return output_path
+
+
+def render_twitter_text_screenshot(
+    tweet_text: str,
+    temp_dir: str,
+    tweet_identifier: str,
+    tweet_info: Optional[Dict[str, Any]] = None,
+    quoted_post: Any = None,
+) -> str:
+    try:
+        from .twitter_rust_screenshot import (
+            TwitterScreenshotRendererError,
+            has_twitter_screenshot_renderer_bin,
+            render_twitter_text_screenshot as render_twitter_text_screenshot_rust,
+        )
+
+        if has_twitter_screenshot_renderer_bin():
+            try:
+                return render_twitter_text_screenshot_rust(
+                    tweet_text=tweet_text,
+                    temp_dir=temp_dir,
+                    tweet_identifier=tweet_identifier,
+                    tweet_info=tweet_info,
+                    quoted_post=quoted_post,
+                )
+            except TwitterScreenshotRendererError as exc:
+                logger.warning(
+                    "Rust Twitter screenshot renderer failed; falling back to Python: %s",
+                    exc,
+                )
+    except Exception as exc:
+        logger.warning(
+            "Could not initialize Rust Twitter screenshot renderer; falling back to Python: %s",
+            exc,
+        )
+
+    return render_twitter_text_screenshot_python(
+        tweet_text=tweet_text,
+        temp_dir=temp_dir,
+        tweet_identifier=tweet_identifier,
+        tweet_info=tweet_info,
+        quoted_post=quoted_post,
+    )

@@ -12,7 +12,7 @@ from typing import Any, Dict, Optional
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RENDERER_TARGET_DIR = REPO_ROOT / "rust-render" / "target"
+RENDERER_TARGET_DIR = REPO_ROOT / "rust_renderer" / "target"
 RENDERER_BINARY_NAME = "oikura-rust-render.exe" if os.name == "nt" else "oikura-rust-render"
 
 
@@ -174,6 +174,10 @@ def get_twitter_screenshot_renderer_bin() -> Path:
         target_profile = profile
 
     return RENDERER_TARGET_DIR / target_profile / RENDERER_BINARY_NAME
+
+
+def has_twitter_screenshot_renderer_bin() -> bool:
+    return get_twitter_screenshot_renderer_bin().is_file()
 
 
 def get_twitter_screenshot_renderer() -> TwitterScreenshotRenderer:
